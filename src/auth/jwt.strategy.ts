@@ -10,7 +10,7 @@ import {  ConfigService } from '@nestjs/config';
 export class JwtStrategy extends PassportStrategy(Strategy){
 
   constructor(configService:ConfigService){
-    console.log('JwtStrategy constructor loaded ✅');
+    console.log('JwtStrategy constructor loaded ');
   super ({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     ignoreExpiration: false,

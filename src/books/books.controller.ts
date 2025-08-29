@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Req, UseGuards, Param, ParseIntPipe,Get, Delete, Patch } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { BooksService } from './books.service';
+import { AddBookDto } from './dto/book.dto';
 
 @Controller('books')
 export class BooksController {
@@ -8,7 +9,7 @@ export class BooksController {
 
   @UseGuards(AuthGuard('jwt')) 
   @Post('/createbook')
-  async createBook(@Req() req, @Body() data: any) {
+  async createBook(@Req() req, @Body() data: AddBookDto) {
     const user = req.user;
     console.log('User:', user);
 
@@ -31,6 +32,7 @@ export class BooksController {
 
    async deleteBookById(@Req() req ,@Param('id',ParseIntPipe) id : number){
      const user = req.user;
+     
      if (user.role!=='ADMIN'){
       return {msg:"Only admin can deleted books"};
      }

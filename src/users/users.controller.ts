@@ -2,6 +2,7 @@ import { Controller,Post,Body,Get,UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RegisterDto,LoginDto } from './dto/user.dto';
 
 
 @Controller('/users')
@@ -10,13 +11,13 @@ export class UsersController {
 
       @Post("/signup")
     
-    async signup(@Body() data:any){
+    async signup(@Body() data:RegisterDto){
         return this.usersService.signup(data);
     }
 
     @Post("/login")
 
-    async login(@Body() data:any){
+    async login(@Body() data:LoginDto){
         return this.usersService.login(data);
     }
 

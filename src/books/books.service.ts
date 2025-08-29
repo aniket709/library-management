@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { availableMemory, title } from 'process';
 import { PrismaService } from 'src/database/prisma.service';
+import { AddBookDto,updateBookCount } from './dto/book.dto';
 
 
 @Injectable()
@@ -10,7 +10,7 @@ export class BooksService {
 
         /*-----------------------------------------------------------*/
 
-    async addBook(data: any){
+    async addBook(data: AddBookDto){
 
       const existingBook = await this.prisma.book.findFirst({
          
@@ -25,7 +25,8 @@ export class BooksService {
         where:{id:existingBook.id},
         data:{
           totalCopies: existingBook.totalCopies + data.totalCopies,
-          availableCopies: existingBook.availableCopies + data.availableCopies,
+          // availableCopies: existingBook.availableCopies + data.availableCopies,
+          availableCopies: existingBook.availableCopies + data.totalCopies,
         }
    })
    return ({
@@ -40,7 +41,7 @@ export class BooksService {
             author: data.author,
             genre: data.genre,
             totalCopies: data.totalCopies,
-            availableCopies:data. availableCopies,
+            availableCopies:data. totalCopies,
             pricing: {
                 create: {
                   buyPrice: data.pricing.buyPrice,
@@ -67,7 +68,7 @@ export class BooksService {
       
         /*-----------------------------------------------------------*/
    
-    async updateBookCount(id: number, data: any) {
+    async updateBookCount(id: number, data: updateBookCount) {
       const existingBook = await this.prisma.book.findUnique({ where: { id } });
     
       if (!existingBook) {
@@ -103,6 +104,15 @@ export class BooksService {
 
         /*-----------------------------------------------------------*/
     async deleteBook(id : number){
+
+      const existingTransactions = await this.prisma.transaction.findMany({
+        where: { bookId: id }
+      });
+      
+      if (existingTransactions.length > 0) {
+        throw new Error("Cannot delete book that has existing transactions.");
+      }
+      
 
       await this.prisma.pricing.delete({
         where: { bookId: id }
